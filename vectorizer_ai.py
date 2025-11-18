@@ -56,6 +56,8 @@ class VectorizerAINode:
                 "save_svg": ("BOOLEAN", {"default": True}),
                 "filename_prefix": ("STRING", {"default": "SVG/vector_raw"}),
                 "max_colors": ("INT", {"default": 0, "min": 0, "max": 256, "step": 1, "display": "slider"}),
+                "color_palette": ("STRING", {"default": "", "multiline": True, "placeholder": "#ff0000;#00ff00;#0000ff"}),
+                "shape_stacking": (["none", "stacked", "cutouts"], {"default": "none"}),
                 "min_shape_area": ("FLOAT", {"default": 1.000, "min": 0.0, "max": 100.0, "step": 0.001}),
                 "adobe_compatibility": ("BOOLEAN", {"default": True}),
                 "disable_gap_filler": ("BOOLEAN", {"default": True}),
@@ -67,7 +69,7 @@ class VectorizerAINode:
     FUNCTION = "process_vectorization"
     CATEGORY = "Conversion"
 
-    def process_vectorization(self, image, api_id, api_secret, output_format, mode, scale, save_svg=True, filename_prefix="vectorized/vector", max_colors=0, min_shape_area=0.125, adobe_compatibility=False, disable_gap_filler=True):
+    def process_vectorization(self, image, api_id, api_secret, output_format, mode, scale, save_svg=True, filename_prefix="vectorized/vector", max_colors=0, min_shape_area=0.125, adobe_compatibility=False, disable_gap_filler=True, color_palette="", shape_stacking="none"): # <-- 기능 추가 2
         final_api_id = api_id
         final_api_secret = api_secret
         
@@ -93,6 +95,8 @@ class VectorizerAINode:
         
         data = {"mode": mode, "output.file_format": api_output_format}
         if max_colors > 0: data["processing.max_colors"] = max_colors
+        if color_palette and color_palette.strip(): data["processing.palette"] = color_palette
+        if shape_stacking != "none": data["output.shape_stacking"] = shape_stacking
         if min_shape_area > 0: data["processing.shapes.min_area_px"] = min_shape_area
         if adobe_compatibility: data["output.svg.adobe_compatibility_mode"] = "true"
         if disable_gap_filler: data["output.gap_filler.enabled"] = "false"
